@@ -9,23 +9,29 @@ const cors = require('cors')
 
 const routes = require('./routes/index')
 
-mongoose.connect(`mongodb://${dbconf.login}:${dbconf.pass}@ds135036.mlab.com:35036/clientbook`, { useNewUrlParser: true })
-let db = mongoose.connection
+async function start() {
+  try {
+    let db = await mongoose.connect(`mongodb://${dbconf.login}:${dbconf.pass}@127.0.0.1:27017/clientbook`, { useNewUrlParser: true })
+    app.use(cors());
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(`/api/clients`, routes.clients);
+    app.use(`/api/childrens`, routes.childrens);
+    app.use(`/api/mc`, routes.masterclasses);
+    app.use(`/api/projects`, routes.projects);
+    routes.inventory.init(app, '/api/inventory')
 
-app.use(`/api/clients`, routes.clients);
-app.use(`/api/childrens`, routes.childrens);
-app.use(`/api/mc`, routes.masterclasses);
-app.use(`/api/projects`, routes.projects);
-routes.inventory.init(app, '/api/inventory')
+    app.get(`/`, upload.array(), (req, res) => {
+      res.send('OK')
+    });
 
-app.get(`/`, upload.array(), (req, res) => {
-  res.send('OK')
-});
+    app.listen(process.env.PORT || 3003, function () {
+      console.log(`Example app listening on port 3003!`);
+    });
+  } catch (error) {
+    console.error(error)
+  }
+}
 
-app.listen(process.env.PORT || 3003, function () {
-  console.log(`Example app listening on port 3003!`);
-});
+start()
