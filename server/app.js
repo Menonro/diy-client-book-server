@@ -29,13 +29,11 @@ async function start() {
     app.get(`/`, upload.array(), (req, res) => {
       res.send('OK')
     });
-
-    app.listen(process.env.PORT || 3003, function () {
-      console.log(`Example app listening on port 3003!`);
-    });
+    return app
   } catch (error) {
     console.error(error)
+    return false
   }
 }
 
-start()
+module.exports = start()
