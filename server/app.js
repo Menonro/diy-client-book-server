@@ -20,11 +20,11 @@ async function start() {
     app.use(csrf({ cookie: true }))
     app.use(bodyParser.json());
 
-    app.use(`/api/clients`, routes.clients);
-    app.use(`/api/childrens`, routes.childrens);
-    app.use(`/api/mc`, routes.masterclasses);
-    app.use(`/api/projects`, routes.projects);
-    routes.inventory.init(app, '/api/inventory')
+    app.use(`/clients`, routes.clients);
+    app.use(`/childrens`, routes.childrens);
+    app.use(`/mc`, routes.masterclasses);
+    app.use(`/projects`, routes.projects);
+    routes.inventory.init(app, '/inventory')
 
     app.get(`/`, upload.array(), (req, res) => {
       res.send('OK')
