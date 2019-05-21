@@ -8,6 +8,9 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const csrf = require('csurf')
 const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+
+const passport = require('passport');
 
 const routes = require('./routes/index')
 
@@ -15,16 +18,27 @@ async function start() {
   try {
     let db = await mongoose.connect(`mongodb://${dbconf.login}:${dbconf.pass}@127.0.0.1:27017/clientbook`, { useNewUrlParser: true })
     app.use(cors());
+    // app.use(csrf({ cookie: true }))
+    app.use(passport.initialize());
+    require('./passport-config')(passport);
+
+    app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cookieParser())
-    app.use(csrf({ cookie: true }))
     app.use(bodyParser.json());
 
-    app.use(`/clients`, routes.clients);
-    app.use(`/childrens`, routes.childrens);
-    app.use(`/mc`, routes.masterclasses);
-    app.use(`/projects`, routes.projects);
-    routes.inventory.init(app, '/inventory')
+    app.use((req, res, next) => {
+      if (req.body) log.info(req.body);
+      if (req.params) log.info(req.params);
+      if (req.query) log.info(req.query);
+      log.info(`Received a ${req.method} request from ${req.ip} for ${req.url}`);
+      next();
+    });
+
+    app.use(`/clients`, passport.authenticate('jwt', { session: false }), routes.clients);
+    app.use(`/childrens`, passport.authenticate('jwt', { session: false }), routes.childrens);
+    app.use(`/mc`, passport.authenticate('jwt', { session: false }), routes.masterclasses);
+    app.use(`/projects`, passport.authenticate('jwt', { session: false }), routes.projects);
+    app.use(`/inventory`, passport.authenticate('jwt', { session: false }), routes.inventory);
 
     app.get(`/`, upload.array(), (req, res) => {
       res.send('OK')
