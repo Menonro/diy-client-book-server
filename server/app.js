@@ -26,10 +26,10 @@ async function start() {
     app.use(bodyParser.json());
 
     app.use((req, res, next) => {
-      if (req.body) log.info(req.body);
-      if (req.params) log.info(req.params);
-      if (req.query) log.info(req.query);
-      log.info(`Received a ${req.method} request from ${req.ip} for ${req.url}`);
+      if (req.body) console.info(req.body);
+      if (req.params) console.info(req.params);
+      if (req.query) console.info(req.query);
+      console.info(`Received a ${req.method} request from ${req.ip} for ${req.url}`);
       next();
     });
 
