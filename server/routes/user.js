@@ -19,6 +19,11 @@ router.post('/register', (req,res) => {
          let error = 'Email Address Exists in Database.';
          return res.status(400).json(error);
       } else {
+         const errs = []
+         if (!req.body.name) errs.push('name')
+         if (!req.body.emailAddress) errs.push('emailAddress')
+         if (!req.body.password) errs.push('password')
+         if (errs.length > 0) return res.status(400).json({ errors: errs })
          const newUser = new User({
             name: req.body.name,
             emailAddress: req.body.emailAddress,
