@@ -8,7 +8,6 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const csrf = require('csurf')
 const cookieParser = require('cookie-parser')
-const bodyParser = require('body-parser')
 
 const passport = require('passport');
 
