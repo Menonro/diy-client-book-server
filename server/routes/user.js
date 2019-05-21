@@ -47,7 +47,7 @@ router.post('/login', async (req, res) => {
    const email = req.body.email;
    const password = req.body.password;
    try {
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ emailAddress: email })
       if (!user) {
          errors.email = "No Account Found";
          return res.status(404).json(errors);
