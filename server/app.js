@@ -6,7 +6,7 @@ const upload = multer();
 const dbconf = require('./../config').db
 const mongoose = require('mongoose')
 const cors = require('cors')
-const csrf = require('csurf')
+// const csrf = require('csurf')
 const cookieParser = require('cookie-parser')
 
 const passport = require('passport');
