@@ -1,7 +1,7 @@
 // routes/user.js
 const router = require('express').Router()
 //Initializes an instance of the Router class.
-const User = require('../models/user');
+const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 //imports the user model and the BcryptJS Library
 // BcryptJS is a no setup encryption tool
@@ -40,35 +40,41 @@ router.post('/register', (req,res) => {
 router.post('/login', (req, res) => {
    const email = req.body.email;
    const password = req.body.password;
-   User.findOne({ email })
-      .then(user => {
-         if (!user) {
-            errors.email = "No Account Found";
-            return res.status(404).json(errors);
-         }
-         bcrypt.compare(password, user.password)
-            .then(isMatch => {
-               if (isMatch) {
-                  const payload = {
-                     id: user._id,
-                     name: user.userName
-                  };
-                  jwt.sign(payload, secret, { expiresIn: 36000 },
-                     (err, token) => {
-                        if (err) res.status(500)
-                           .json({
-                              error: "Error signing token",
-                              raw: err
-                           });
-                        res.json({
-                           success: true,
-                           token: `Bearer ${token}`
-                        });
+   try {
+      const user = await User.findOne({ email })
+      if (!user) {
+         errors.email = "No Account Found";
+         return res.status(404).json(errors);
+      }
+      try {
+         const isMatch = await bcrypt.compare(password, user.password)
+         if (isMatch) {
+            const payload = {
+               id: user._id,
+               name: user.userName
+            };
+            jwt.sign(payload, secret, { expiresIn: 36000 },
+               (err, token) => {
+                  if (err) res.status(500)
+                     .json({
+                        error: "Error signing token",
+                        raw: err
                      });
-               } else {
-                  errors.password = "Password is incorrect";
-                  res.status(400).json(errors);
+                  res.json({
+                     success: true,
+                     token: `Bearer ${token}`
+                  });
                }
-            });
-      });
+            );
+         } else {
+            errors.password = "Password is incorrect";
+            res.status(400).json(errors);
+         }
+      } catch (error) {
+         return res.status(400).json(error);
+      }
+   } catch (error) {
+      return res.status(404).json(error);
+   }
+   
 });
