@@ -33,6 +33,7 @@ async function start() {
       next();
     });
 
+    app.use(`/user`, routes.user);
     app.use(`/clients`, passport.authenticate('jwt', { session: false }), routes.clients);
     app.use(`/childrens`, passport.authenticate('jwt', { session: false }), routes.childrens);
     app.use(`/mc`, passport.authenticate('jwt', { session: false }), routes.masterclasses);
