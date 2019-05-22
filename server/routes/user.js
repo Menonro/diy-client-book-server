@@ -59,7 +59,13 @@ router.post('/login', async (req, res) => {
                id: user._id,
                name: user.userName
             };
-            jwt.sign(payload, secret, { expiresIn: 36000 },
+            const dt = new Date();
+            dt.setDate(dt.getDate() + 1);
+            dt.setHours(0);
+            dt.setMinutes(0);
+            dt.setSeconds(0);
+            dt.setMilliseconds(0);
+            jwt.sign(payload, secret, { expiresIn: Math.ceil((dt.getTime() - Date.now()) / 1000) },
                (err, token) => {
                   if (err) res.status(500)
                      .json({

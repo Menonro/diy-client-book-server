@@ -24,15 +24,6 @@ async function start() {
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
-
-    app.use((req, res, next) => {
-      if (req.body) console.info(req.body);
-      if (req.params) console.info(req.params);
-      if (req.query) console.info(req.query);
-      console.info(`Received a ${req.method} request from ${req.ip} for ${req.url}`);
-      next();
-    });
-
     app.use(`/user`, routes.user);
     app.use(`/clients`, passport.authenticate('jwt', { session: false }), routes.clients);
     app.use(`/childrens`, passport.authenticate('jwt', { session: false }), routes.childrens);
